@@ -23,4 +23,11 @@ while True:
     print("3.start challenge")
     choice =str(input("\nenter the number of your choice: "))
     if choice == "1":
-        print("ilyass")
+        question = print(str(input("\n entre the question here: ")))
+        reponce = print(str(input("\n entre the reponse here: ")))
+        save_flashcards(question)
+        save_flashcards(reponce)
+    elif choice == "2":
+        print("\n ----------Those Are Your FlashCards----------")
+        load_flashcards()
+    
