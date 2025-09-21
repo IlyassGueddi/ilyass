@@ -1,14 +1,20 @@
 import random
 
+count = 0
 
 while True:
-    guess1 = random.randint(1, 6)
-    guess2 = random.randint(1, 6)
     user = input("Roll the dice? (y/n): ")
     if user == "y" or user == "Y":
-        print (f"({guess1}, {guess2})")
+        dice = int(input("how many dice you want to rolle? ")) 
+        for i in range(dice):
+            roll = random.randint(1, 6)
+            print ("Die", i +1, ":", roll)
+        count = count + dice
+        print(f"you roll the dice {count} times")
     elif user == "n" or user == "N":
-        print ("good bye")
+        print ("Thanks for playing!")
         break
     else:
         print("invalide choice!")
+
+
