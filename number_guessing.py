@@ -3,8 +3,10 @@ import random
 
 
 while True :
-    pc = random.randint(1, 100)
-    while pc:
+    start = int(input("Enter the start point: "))
+    end = int(input("Enter the end point: "))
+    pc = random.randint(start, end)
+    while True:
         user = int(input("what you think the number is : "))
         if user > pc :
             print("too hight!")
