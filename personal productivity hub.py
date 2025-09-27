@@ -71,9 +71,81 @@ def get_next_task_id(tasks_list):
     return max(task.ID for task in tasks_list) + 1
 
 
+
+
+class notes:
+    def __init__(self, NID, note_title = None, note = None):
+        if note_title is not None and note is not None:
+            self.note_title = note_title
+            self.note = note
+        else:
+            self.note_title = input("\n \nset a title for the new note: ")
+            self.note = input("\nwrite your note: ")
+
+        self.NID = NID
+
+    def add_note(self):
+        print(f"\ntask added: {self.note_title} (NID: {self.NID})")
+
+    def note_dict(self):
+        return{
+            "NID": self.NID,
+            "note_title": self.note_title,
+            "note": self.note
+        }
+    
+    @classmethod
+    def from_dict(cls, data):
+        """Create a note object from dictionary data"""
+        return cls(data["NID"], data["note_title"], data["note"])
+    
+def save_notes(notes_list, filename ="notes.json"):
+    """Save notes to a JSON file"""
+    try:
+        with open(filename, 'w') as f:
+            # Convert all notes objects to dictionaries
+            notes_data = [note.note_dict() for note in notes_list]
+            json.dump(notes_data, f, indent=2)
+        print(f"note saved to {filename}")
+    except Exception as e:
+        print(f"Error saving notes: {e}")
+
+def load_notes(filename="notes.json"):
+    """Load notes from a JSON file"""
+    try:
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                notes_data = json.load(f)
+                # Convert dictionaries back to notes objects
+                loaded_notes = [notes.from_dict(data) for data in notes_data]
+                print(f"Loaded {len(loaded_notes)} tasks from {filename}")
+                return loaded_notes
+        else:
+            print(f"No saved notes found. Starting fresh.")
+            return []
+    except Exception as e:
+        print(f"Error loading notes: {e}")
+        return []
+    
+def get_next_note_nid(notes_list):
+    """Get the next available note NID"""
+    if not notes_list:
+        return 1
+    return max(note.NID for note in notes_list) + 1
+
+
+
+
 # Load existing tasks at startup
 tasks_gr = load_tasks()
 the_task_ID = get_next_task_id(tasks_gr)
+
+
+# Load existing notes at startup
+notes_gr = load_notes()
+the_note_NID = get_next_note_nid(notes_gr)
+
+
 
 while True:
 
@@ -178,9 +250,61 @@ while True:
     elif user_choice == "2":
         print("\n \n__________NOTES__________")
         print("1- Add note")
-        print("2- ")
+        print("2- Show notes")
+        print("3- Delete note")
+        print("4- Back to main menu")
+        user_choice_note = str(input("choose a number from 1 to 4: "))
+        if user_choice_note == "1":
+        # Create a new note (this will ask the user for note title and note)
+                new_note = notes(the_note_NID)
+                # Add it to the notes list
+                notes_gr.append(new_note)
+                # Confirm to the user
+                new_note.add_note()
+                # Increment note_NID for the next note
+                the_note_NID += 1
+                # Save notes after adding
+                save_notes(notes_gr)
+
+        elif user_choice_note == "2":
+                    if not notes_gr:
+                        print("No notes available.")
+                    else:
+                        print("\n--- ALL NOTES ---")
+                        for note in notes_gr:
+                            print(f"NID: {note.NID} | {note.note_title} - {note.note}")
+
+        elif user_choice_note == "3":
+                    if not notes_gr:
+                        print("No notes available to delete.")
+                    else:
+                        print("\nAvailable notes:")
+                        for note in notes_gr:
+                            print(f"NID: {note.NID} - {note.note_title}")
+                        
+                        try:
+                            note_nid = int(input("Enter note NID to delete: "))
+                            note_found = False
+                            for i, note in enumerate(notes_gr):
+                                if note.NID == note_nid:
+                                    deleted_note = notes_gr.pop(i)
+                                    print(f"note '{deleted_note.note_title}' deleted!")
+                                    note_found = True
+                                    save_notes(notes_gr)  # Save after deleting
+                                    break
+                            if not note_found:
+                                print("note not found!")
+                        except ValueError:
+                            print("Please enter a valid note NID number.")
+
+        elif user_choice_note == "4":
+            continue  # Go back to main menu
+                
+        else:
+            print("Invalid choice. Please choose 1-4.")
 
 
+    # Exit
     elif user_choice == "5":
         # Save tasks before exiting
         save_tasks(tasks_gr)
