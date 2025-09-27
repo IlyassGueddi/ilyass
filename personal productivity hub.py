@@ -74,10 +74,6 @@ def get_next_task_id(tasks_list):
 # Load existing tasks at startup
 tasks_gr = load_tasks()
 the_task_ID = get_next_task_id(tasks_gr)
-    
-
-tasks_gr = []
-the_task_ID = 1
 
 while True:
 
@@ -87,7 +83,7 @@ while True:
     print("2- Notes")
     print("3- Journaling")
     print("4- Timer")
-    print("5- Exist")
+    print("5- Exit")
     user_choice = str(input("choose a number from 1 to 5: "))
 
     # Tasks 
@@ -98,8 +94,8 @@ while True:
         print("1- Add new task")
         print("2- Mark a task as done")
         print("3- Show tasks")
-        print("4- Delete tassk")
-        print("5- Back tomain menu")
+        print("4- Delete task")
+        print("5- Back to main menu")
         user_choice_task = str(input("choose a number from 1 to 5: "))
 
         if user_choice_task == "1":
@@ -177,6 +173,14 @@ while True:
         else:
             print("Invalid choice. Please choose 1-5.")
 
+    
+    # Notes
+    elif user_choice == "2":
+        print("\n \n__________NOTES__________")
+        print("1- Add note")
+        print("2- ")
+
+
     elif user_choice == "5":
         # Save tasks before exiting
         save_tasks(tasks_gr)
@@ -184,7 +188,7 @@ while True:
         break
     
     else:
-        if user_choice in ["2", "3", "4"]:
+        if user_choice in ["3", "4"]:
             print(f"Feature {user_choice} not implemented yet.")
         else:
             print("Invalid choice. Please choose 1-5.")
