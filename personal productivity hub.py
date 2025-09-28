@@ -73,6 +73,8 @@ def get_next_task_id(tasks_list):
 
 
 
+
+
 class notes:
     def __init__(self, NID, note_title = None, note = None):
         if note_title is not None and note is not None:
@@ -134,6 +136,81 @@ def get_next_note_nid(notes_list):
     return max(note.NID for note in notes_list) + 1
 
 
+
+
+
+class journals:
+    def __init__(self, JID, date=None, title=None, main=None):
+        # If creating from saved data, use provided values
+        if date is not None and main is not None:
+            self.date = date
+            self.main = main
+            self.title = title
+        else:
+            # If creating new journal, ask user for input
+            self.date = input("\n \nset today's date: ")
+            self.title = input("\n \nset today's title: ")
+            self.description = input("\nfeel free to say what's in your heart: ")
+        
+        self.JID = JID
+
+    def add_journal(self):
+        print(f"\njournal added: {self.date} - {self.title}  (JID: {self.JID})")
+    
+    def to_dict(self):
+        return{
+            "JID": self.JID,
+            "date": self.date,
+            "title": self.title,
+            "main": self.main,
+        }
+    
+    @classmethod
+    def from_dict(cls, data):
+        """Create a journal object from dictionary data"""
+        return cls(data["JID"], data["date"], data["title"], data["main"])
+    
+def save_journals(journals_list, filename="journals.json"):
+    """Save journals to a JSON file"""
+    try:
+        with open(filename, 'w') as f:
+            # Convert all journal objects to dictionaries
+            journals_data = [journal.to_dict() for journal in journals_list]
+            json.dump(journals_data, f, indent=2)
+        print(f"journals saved to {filename}")
+    except Exception as e:
+        print(f"Error saving journals: {e}")
+
+
+def load_journals(filename="journas.json"):
+    """Load journals from a JSON file"""
+    try:
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                journals_data = json.load(f)
+                # Convert dictionaries back to journal objects
+                loaded_journals = [journals.from_dict(data) for data in journals_data]
+                print(f"Loaded {len(loaded_journals)} journals from {filename}")
+                return loaded_journals
+        else:
+            print(f"No saved journals found. Starting fresh.")
+            return []
+    except Exception as e:
+        print(f"Error loading journals: {e}")
+        return []
+    
+def get_next_journal_jid(journals_list):
+    """Get the next available journal JID"""
+    if not journals_list:
+        return 1
+    return max(journal.JID for journal in journals_list) + 1
+
+
+
+
+# Load existing journals at startup
+journals_gr = load_journals()
+the_journal_JID = get_next_journal_jid(journals_gr)
 
 
 # Load existing tasks at startup
@@ -304,6 +381,64 @@ while True:
             print("Invalid choice. Please choose 1-4.")
 
 
+    elif user_choice == "3":
+        print("\n \n__________JOURNALING__________")
+        print("1- create a new journal entry")
+        print("2- display all entries")
+        print("3- remove an entry")
+        print("4- Back to main menu")
+        user_choice_journal = str(input("choose a number from 1 to 4: "))
+        if user_choice_journal == "1":
+        # Create a new journal (this will ask the user for journal title, date and note)
+                new_journal = journals(the_journal_JID)
+                # Add it to the journales list
+                journals_gr.append(new_journal)
+                # Confirm to the user
+                new_journal.add_journal()
+                # Increment journal_JID for the next journal
+                the_note_NID += 1
+                # Save notes after adding
+                save_journals(journals_gr)
+
+        elif user_choice_journal == "2":
+                    if not journals_gr:
+                        print("No journals available.")
+                    else:
+                        print("\n--- ALL JOURNALS ---")
+                        for journal in journals_gr:
+                            print(f"JID: {journal.JID} - {journal.date} | {journal.title} - {journal.main}")
+
+        elif user_choice_journal == "3":
+                    if not journals_gr:
+                        print("No journals available to delete.")
+                    else:
+                        print("\nAvailable journals:")
+                        for journal in journals_gr:
+                            print(f"JID: {journal.JID} | {journal.date} - {journal.title}")
+                        
+                        try:
+                            journal_jid = int(input("Enter Journal JID to delete: "))
+                            journal_found = False
+                            for i, journal in enumerate(journals_gr):
+                                if journal.JID == journal_jid:
+                                    deleted_journal = journals_gr.pop(i)
+                                    print(f"journal '{deleted_journal.title}' deleted!")
+                                    journal_found = True
+                                    save_journals(journals_gr)  # Save after deleting
+                                    break
+                            if not journal_found:
+                                print("journal not found!")
+                        except ValueError:
+                            print("Please enter a valid journal JID number.")
+
+        elif user_choice_journal == "4":
+            continue  # Go back to main menu
+                
+        else:
+            print("Invalid choice. Please choose 1-4.")
+            
+
+
     # Exit
     elif user_choice == "5":
         # Save tasks before exiting
@@ -312,7 +447,7 @@ while True:
         break
     
     else:
-        if user_choice in ["3", "4"]:
-            print(f"Feature {user_choice} not implemented yet.")
+        if user_choice in ["4"]:
+            print(f"\n Feature {user_choice} not implemented yet.")
         else:
             print("Invalid choice. Please choose 1-5.")
