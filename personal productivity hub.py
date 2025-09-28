@@ -150,7 +150,7 @@ class journals:
             # If creating new journal, ask user for input
             self.date = input("\n \nset today's date: ")
             self.title = input("\n \nset today's title: ")
-            self.description = input("\nfeel free to say what's in your heart: ")
+            self.main = input("\nfeel free to say what's in your heart: ")
         
         self.JID = JID
 
@@ -182,7 +182,7 @@ def save_journals(journals_list, filename="journals.json"):
         print(f"Error saving journals: {e}")
 
 
-def load_journals(filename="journas.json"):
+def load_journals(filename="journals.json"):
     """Load journals from a JSON file"""
     try:
         if os.path.exists(filename):
@@ -436,7 +436,7 @@ while True:
                 
         else:
             print("Invalid choice. Please choose 1-4.")
-            
+
 
 
     # Exit
