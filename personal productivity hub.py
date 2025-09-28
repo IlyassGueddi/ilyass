@@ -1,5 +1,7 @@
 import os
 import json
+import time
+from datetime import datetime
 
 class tasks:
     def __init__(self, ID, title=None, description=None, done=False):
@@ -204,6 +206,87 @@ def get_next_journal_jid(journals_list):
     if not journals_list:
         return 1
     return max(journal.JID for journal in journals_list) + 1
+
+
+
+
+
+def custom_timer():
+    """Run a custom timer"""
+    timer_name = input("\nSet a name for this timer: ")
+    try:
+        duration_minutes = int(input("Set duration in minutes: "))
+    except ValueError:
+        print("Invalid input. Setting to 25 minutes.")
+        duration_minutes = 25
+    
+    print(f"\nTimer '{timer_name}' started for {duration_minutes} minutes!")
+    print("Press Ctrl+C to stop the timer early.")
+    
+    try:
+        total_seconds = duration_minutes * 60
+        
+        while total_seconds > 0:
+            minutes = total_seconds // 60
+            seconds = total_seconds % 60
+            print(f"\rTime remaining: {minutes:02d}:{seconds:02d}", end="", flush=True)
+            time.sleep(1)
+            total_seconds -= 1
+        
+        print(f"\n🎉 Timer '{timer_name}' completed!")
+        
+    except KeyboardInterrupt:
+        print(f"\n⏹️ Timer '{timer_name}' stopped early.")
+
+def pomodoro_timer():
+    """Run a Pomodoro timer session with custom title"""
+    session_title = input("\nSet a title for this Pomodoro session: ")
+    print(f"\n🍅 Starting Pomodoro Session: '{session_title}'")
+    print("Work: 25 minutes | Break: 5 minutes")
+    
+    try:
+        # Work session
+        print(f"\n📚 Work session started: {session_title}")
+        work_time = 25 * 60  # 25 minutes in seconds
+        
+        while work_time > 0:
+            minutes = work_time // 60
+            seconds = work_time % 60
+            print(f"\r[{session_title}] Work time: {minutes:02d}:{seconds:02d}", end="", flush=True)
+            time.sleep(1)
+            work_time -= 1
+        
+        print(f"\n🎉 Work session '{session_title}' completed! Time for a break!")
+        
+        # Break session
+        print("\n☕ Break session started!")
+        break_time = 5 * 60  # 5 minutes in seconds
+        
+        while break_time > 0:
+            minutes = break_time // 60
+            seconds = break_time % 60
+            print(f"\r[{session_title}] Break time: {minutes:02d}:{seconds:02d}", end="", flush=True)
+            time.sleep(1)
+            break_time -= 1
+        
+        print(f"\n🔔 Break completed for '{session_title}'! Ready for another session?")
+        
+    except KeyboardInterrupt:
+        print(f"\n⏹️ Pomodoro session '{session_title}' stopped.")
+
+def show_real_time():
+    """Display real-time clock"""
+    print("\n🕐 Real-Time Clock")
+    print("Press Ctrl+C to stop")
+    
+    try:
+        while True:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"\rCurrent time: {current_time}", end="", flush=True)
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\n⏹️ Real-time clock stopped.")
+
 
 
 
@@ -414,10 +497,10 @@ while True:
                     else:
                         print("\nAvailable journals:")
                         for journal in journals_gr:
-                            print(f"JID: {journal.JID} | {journal.date} - {journal.title}")
+                            print(f"\n JID: {journal.JID} | {journal.date} - {journal.title}")
                         
                         try:
-                            journal_jid = int(input("Enter Journal JID to delete: "))
+                            journal_jid = int(input("\n Enter Journal JID to delete: "))
                             journal_found = False
                             for i, journal in enumerate(journals_gr):
                                 if journal.JID == journal_jid:
@@ -438,16 +521,35 @@ while True:
             print("Invalid choice. Please choose 1-4.")
 
 
+    elif user_choice == "4":
+        print("\n \n__________TIMER__________")
+        print("1- Start custom timer")
+        print("2- Start Pomodoro timer (25min work + 5min break)")
+        print("3- Show real-time clock")
+        print("4- Back to main menu")
+        user_choice_timer = str(input("choose a number from 1 to 4: "))
+        
+        if user_choice_timer == "1":
+            custom_timer()
+        
+        elif user_choice_timer == "2":
+            pomodoro_timer()
+        
+        elif user_choice_timer == "3":
+            show_real_time()
+        
+        elif user_choice_timer == "4":
+            continue  # Go back to main menu
+        
+        else:
+            print("Invalid choice. Please choose 1-4.")
+
 
     # Exit
     elif user_choice == "5":
-        # Save tasks before exiting
+        # Save all data before exiting
         save_tasks(tasks_gr)
-        print("Tasks saved. Goodbye!")
+        save_notes(notes_gr)
+        save_journals(journals_gr)
+        print("All data saved. Goodbye!")
         break
-    
-    else:
-        if user_choice in ["4"]:
-            print(f"\n Feature {user_choice} not implemented yet.")
-        else:
-            print("Invalid choice. Please choose 1-5.")
