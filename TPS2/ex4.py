@@ -40,3 +40,9 @@ def calculer_moyenne(chaine_notes = [], dictt = []):
 
 students = []
 calculer_moyenne(donnees_brutes)
+
+
+
+
+arr = [1,2,54,6,7]
+arr [3]
